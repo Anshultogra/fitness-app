@@ -14,9 +14,12 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
     });
     const data = await response.json();
+    if (!response.ok) {
+      return res.status(200).json({ debugError: true, status: response.status, details: data });
+    }
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
     res.status(200).json({ content: [{ text }] });
   } catch (err) {
-    res.status(500).json({ error: "Server error", details: String(err) });
+    res.status(200).json({ debugError: true, details: String(err) });
   }
 };
